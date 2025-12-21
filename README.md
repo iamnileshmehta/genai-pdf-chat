@@ -62,34 +62,40 @@ RAG improves reliability by:
 
 ---
 
-##Usage
-Upload a PDF document
-Ask questions related to the document
-View conversational answers with source references
-Use Clear Chat to reset conversation memory
+## Usage
 
-##Security Notes
-API keys are managed using environment variables
-.env and temporary files are excluded via .gitignore
+- Upload a PDF document
+- Ask questions related to the document
+- View conversational answers with source references
+- Use Clear Chat to reset conversation memory
 
-##Key Learnings
-Handling Streamlit reruns efficiently
-Building conversational RAG systems
-Managing LLM memory and UI state
-Designing LLM-agnostic architectures
-Debugging real-world LLM integration issues
+---
 
-#Future Improvements
-Multi-PDF support
-Persistent vector store
-User authentication
-Streaming responses
-Model switching via UI
+## Security Notes
 
-Author
-Nilesh Mehta
-AI-ML Engineer
-Focused on practical, production-ready AI systems
+- API keys are managed using environment variables
+- .env and temporary files are excluded via .gitignore
+
+## Key Learnings
+
+- Handling Streamlit reruns efficiently
+- Building conversational RAG systems
+- Managing LLM memory and UI state
+- Designing LLM-agnostic architectures
+- Debugging real-world LLM integration issues
+
+## Future Improvements
+
+- Multi-PDF support
+- Persistent vector store
+- User authentication
+- Streaming responses
+= Model switching via UI
+
+## Author
+- Nilesh Mehta
+- AI-ML Engineer
+- Focused on practical, production-ready AI systems
 
 ⭐ If you find this project useful, feel free to star the repository.
 
@@ -124,5 +130,6 @@ genai-pdf-chat/
 │   ├── upload.png
 │   └── chat.png
 └── data/
+
 
 
