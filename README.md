@@ -117,5 +117,6 @@ RAG improves reliability by:
 ### 1️⃣ Clone the repository
 ```bash
 
-git clone https://github.com/YOUR_USERNAME/genai-pdf-chat.git
+git clone https://github.com/iamnileshmehta/genai-pdf-chat.git
 cd genai-pdf-chat
+
