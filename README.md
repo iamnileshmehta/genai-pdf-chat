@@ -62,40 +62,11 @@ RAG improves reliability by:
 
 ---
 
-## 📦 Installation
-
-### 1️⃣ Clone the repository
-```bash
-
-##Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-##Install dependencies
-pip install -r requirements.txt
-
-##Setup environment variables
-GOOGLE_API_KEY=your_api_key_here
-
-##Run the Application
-streamlit run app.py
 ##Usage
 Upload a PDF document
 Ask questions related to the document
 View conversational answers with source references
 Use Clear Chat to reset conversation memory
-
-##Project Structure
-genai-pdf-chat/
-│
-├── app.py
-├── requirements.txt
-├── .env.example
-├── README.md
-├── screenshots/
-│   ├── upload.png
-│   └── chat.png
-└── data/
 
 ##Security Notes
 API keys are managed using environment variables
@@ -121,3 +92,37 @@ AI-ML Engineer
 Focused on practical, production-ready AI systems
 
 ⭐ If you find this project useful, feel free to star the repository.
+
+## 📦 Installation
+
+### 1️⃣ Clone the repository
+```bash
+
+##Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+
+##Install dependencies
+pip install -r requirements.txt
+
+##Setup environment variables
+GOOGLE_API_KEY=your_api_key_here
+
+##Run the Application
+streamlit run app.py
+
+
+
+##Project Structure
+genai-pdf-chat/
+│
+├── app.py
+├── requirements.txt
+├── .env.example
+├── README.md
+├── screenshots/
+│   ├── upload.png
+│   └── chat.png
+└── data/
+
+
