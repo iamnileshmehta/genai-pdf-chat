@@ -12,18 +12,26 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_classic.memory import ConversationBufferMemory
 
 from langchain_classic.chains import ConversationalRetrievalChain
+from rag_pipe import build_chain
 
 
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
+# embeddings = HuggingFaceEmbeddings(
+#     model_name="sentence-transformers/all-MiniLM-L6-v2"
+# )
 
 #------------------------------------------------------------------------------
 #ENV SETUP
 #------------------------------------------------------------------------------
 
 load_dotenv()
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+# os.environ.get["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
+
+# st.write("GROQ_API_KEY present:", bool(os.getenv("GROQ_API_KEY")))
+# st.write("GROQ_API_KEY length:", len(os.getenv("GROQ_API_KEY", "")))
+
+# if not os.getenv("GROQ_API_KEY"):
+#     st.error("Groq API Key not found.")
+#     st.stop()
 
 #------------------------------------------------------------------------------
 #STREAMLIT UI
@@ -41,47 +49,6 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-
-#------------------------------------------------------------------------------
-#MEMORY
-#------------------------------------------------------------------------------
-
-if "memory" not in st.session_state:
-    st.session_state.memory = ConversationBufferMemory(
-        memory_key="chat_history",
-        return_messages=True
-    )
-
-#------------------------------------------------------------------------------
-#PIPELINE
-#------------------------------------------------------------------------------
-
-@st.cache_resource
-def build_chain(pdf_path):
-    loader = PyPDFLoader(pdf_path)
-    documents = loader.load()
-
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200
-    )
-    docs = splitter.split_documents(documents)
-
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-
-    vectorstore = FAISS.from_documents(docs, embeddings)
-
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-
-    qa_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-        memory=st.session_state.memory
-    )
-
-    return qa_chain
 
 #------------------------------------------------------------------------------
 #STREMLIT UI
