@@ -101,35 +101,22 @@ RAG improves reliability by:
 
 ## 📦 Installation
 
+## Create virtual environment (recommended)
+- python -m venv venv
+- source venv/bin/activate   # Windows: venv\Scripts\activate
+
+## Install dependencies
+- pip install -r requirements.txt
+
+## Setup environment variables
+- GOOGLE_API_KEY=your_api_key_here
+
+## Run the Application
+- streamlit run app.py
+
 ### 1️⃣ Clone the repository
 ```bash
 
-##Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-##Install dependencies
-pip install -r requirements.txt
-
-##Setup environment variables
-GOOGLE_API_KEY=your_api_key_here
-
-##Run the Application
-streamlit run app.py
-
-
-
-##Project Structure
-genai-pdf-chat/
-│
-├── app.py
-├── requirements.txt
-├── .env.example
-├── README.md
-├── screenshots/
-│   ├── upload.png
-│   └── chat.png
-└── data/
-
-
+git clone https://github.com/iamnileshmehta/genai-pdf-chat.git
+cd genai-pdf-chat
 
