@@ -1,3 +1,6 @@
+import base64
+
+from click import prompt
 import streamlit as st
 import os 
 from dotenv import load_dotenv
@@ -67,17 +70,30 @@ if uploaded_file:
     user_input = st.chat_input("Ask a question about the PDF")
 
     if user_input and user_input.strip():
-        st.chat_message("user").write(user_input)
+        st.session_state.messages.append({"role": "user", "content": user_input})
 
         with st.spinner("Thinking..."):
             result = qa_chain.invoke({
                 "question": user_input
             })
+        with st.chat_message("user"):
+            st.markdown(user_input)
 
-        st.chat_message("assistant").write(result["answer"])
+        
+        with st.chat_message("assistant"):
+            response = f"Echo: {result['answer']}" # Replace with actual AI call (e.g., OpenAI)
+            st.markdown(response)
+        
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
     if st.button("🧹 Clear Chat"):
         st.session_state.messages = []
         st.session_state.memory.clear()
+
+    if st.button("Open PDF in sideview"):
+        bytes_data = uploaded_file.getvalue()
+        base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
+        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="600" height="800" type="application/pdf"></iframe>'
+        st.sidebar.markdown(pdf_display, unsafe_allow_html=True)
     
 
