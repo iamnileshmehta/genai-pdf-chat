@@ -6,6 +6,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_classic.memory import ConversationBufferMemory
@@ -15,8 +16,8 @@ from langchain_classic.chains import ConversationalRetrievalChain
 
 load_dotenv()
 
-if not os.getenv("GROQ_API_KEY"):
-    st.error("Groq API Key not found.")
+if not os.getenv("HF_TOKEN"):
+    st.error("Hugging Face Token not found.")
     st.stop()
 
 
@@ -45,10 +46,12 @@ def build_chain(pdf_path):
 
     vectorstore = FAISS.from_documents(docs, embeddings)
 
-    llm = ChatGroq(
-        model="meta-llama/Llama-3.1-8B-Instruct",
-        temperature=0,
-        api_key=os.getenv("GROQ_API_KEY")
+    llm = ChatHuggingFace(
+        model=HuggingFaceEndpoint(
+            repo_id="meta-llama/Llama-3.1-8B-Instruct",
+            temperature=0,
+            token=os.getenv("HF_TOKEN")
+        )
     )
 
 
