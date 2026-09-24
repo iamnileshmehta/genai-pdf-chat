@@ -1,99 +1,54 @@
-import base64
-
-from click import prompt
 import streamlit as st
-import os 
-from dotenv import load_dotenv
-
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-from langchain_classic.memory import ConversationBufferMemory
-
-from langchain_classic.chains import ConversationalRetrievalChain
+import os
 from rag_pipe import build_chain
 
+st.set_page_config(page_title="GenAI PDF Chatbot", layout="centered")
+st.title("📄 GenAI PDF Chatbot")
+st.write("Upload a PDF document and ask questions instantly!")
 
-# embeddings = HuggingFaceEmbeddings(
-#     model_name="sentence-transformers/all-MiniLM-L6-v2"
-# )
-
-#------------------------------------------------------------------------------
-#ENV SETUP
-#------------------------------------------------------------------------------
-
-load_dotenv()
-# os.environ.get["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-
-# st.write("GROQ_API_KEY present:", bool(os.getenv("GROQ_API_KEY")))
-# st.write("GROQ_API_KEY length:", len(os.getenv("GROQ_API_KEY", "")))
-
-# if not os.getenv("GROQ_API_KEY"):
-#     st.error("Groq API Key not found.")
-#     st.stop()
-
-#------------------------------------------------------------------------------
-#STREAMLIT UI
-#------------------------------------------------------------------------------
-
-st.set_page_config(page_title="GenAI PDF Chatbot")
-st.title("GenAI based Document Reader")
-st.write("Upload PDF and asked questions")
-
-
+# Initializing global messages tracking block
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-
-
-#------------------------------------------------------------------------------
-#STREMLIT UI
-#------------------------------------------------------------------------------
-
-uploaded_file = st.file_uploader("Upload PDF", type=["pdf"])
+# File uploading trigger layer
+uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 
 if uploaded_file:
-    with open("temp.pdf", "wb") as f:
-        f.write(uploaded_file.getbuffer())
-
-    st.success("PDF loaded")
-
-    qa_chain = build_chain("temp.pdf")
-
-    user_input = st.chat_input("Ask a question about the PDF")
-
-    if user_input and user_input.strip():
-        st.session_state.messages.append({"role": "user", "content": user_input})
-
-        with st.spinner("Thinking..."):
-            result = qa_chain.invoke({
-                "question": user_input
-            })
-        with st.chat_message("user"):
-            st.markdown(user_input)
-
+    # Creating a secure temporary storage path
+    temp_dir = "temp"
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
         
-        with st.chat_message("assistant"):
-            response = f"Echo: {result['answer']}" # Replace with actual AI call (e.g., OpenAI)
-            st.markdown(response)
-        
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
-    if st.button("🧹 Clear Chat"):
-        st.session_state.messages = []
-        st.session_state.memory.clear()
-
-    if st.button("Open PDF in sideview"):
-        bytes_data = uploaded_file.getvalue()
-        base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
-        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="600" height="800" type="application/pdf"></iframe>'
-        st.sidebar.markdown(pdf_display, unsafe_allow_html=True)
+    temp_file_path = os.path.exists(temp_dir)
+    temp_file_path = os.path.join(temp_dir, uploaded_file.name)
     
-
+    with open(temp_file_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+        
+    with st.spinner("Processing PDF data through FAISS and Vector Embedding..."):
+        try:
+            # Building standard architecture chain
+            qa_chain = build_chain(temp_file_path)
+            st.success("PDF processing complete! Pipeline ready.")
+            
+            # Simple Interface chat render loops
+            for message in st.session_state.messages:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+                    
+            if prompt := st.chat_input("Ask a question about the PDF contents:"):
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                
+                with st.spinner("Retrieving from FAISS and waiting for response..."):
+                    response = qa_chain.invoke({"question": prompt})
+                    answer = response.get("answer", "Unable to extract response validation constraints.")
+                    
+                with st.chat_message("assistant"):
+                    st.markdown(answer)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+                
+        except Exception as e:
+            st.error(f"Execution Error context missing.")
+            st.stop()
