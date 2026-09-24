@@ -42,7 +42,7 @@ def build_chain(pdf_path):
         repo_id="meta-llama/Llama-3.1-8B-Instruct",
         temperature=0.1,
         huggingfacehub_api_token=hf_token,
-        task="text-generation"
+        task="conversational"
     )
 
     # FIX: Memory verification runtime loop ke andar hi declare kiya gaya hai
