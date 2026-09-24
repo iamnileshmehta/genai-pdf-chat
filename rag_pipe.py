@@ -46,9 +46,9 @@ def build_chain(pdf_path):
     vectorstore = FAISS.from_documents(docs, embeddings)
 
     llm = ChatGroq(
-        model="llama-3.1-8b-instant",
+        model_name="llama-3.1-8b-instant",
         temperature=0,
-        api_key=os.getenv("GROQ_API_KEY")
+        groq_api_key=os.getenv("GROQ_API_KEY")
     )
 
 
