@@ -47,7 +47,8 @@ if "memory" not in st.session_state:
 @st.cache_resource
 def build_retriever(pdf_path):
     """Heavy, shareable part: load PDF, split, embed, index. Cached."""
-    documents = PyPDFLoader(pdf_path).load()
+    loader = PyPDFLoader(pdf_path)
+    documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     docs = splitter.split_documents(documents)
