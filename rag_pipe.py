@@ -46,7 +46,7 @@ def build_chain(pdf_path):
     vectorstore = FAISS.from_documents(docs, embeddings)
 
     llm = ChatGroq(
-        model="whisper-large-v3-turbo",
+        model="openai/gpt-oss-120b",
         temperature=0,
         api_key=os.getenv("GROQ_API_KEY")
     )
