@@ -8,15 +8,18 @@ from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_classic.memory import ConversationBufferMemory
+# Note: LangChain ke standard updates ke mutabik direct import use karein
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
 
-from langchain_classic.chains import ConversationalRetrievalChain
-
-
+# 1. Local ke liye dotenv load karein, agar Streamlit par hai toh Secrets automatic os.environ mein aa jaate hain
 load_dotenv()
 
-if not os.getenv("GROQ_API_KEY"):
-    st.error("Groq API Key not found.")
+# Streamlit Cloud par Secrets se direct key uthane ka sasta aur best tarika
+groq_api_key = os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY")
+
+if not groq_api_key:
+    st.error("Groq API Key not found. Please add it to Streamlit Secrets.")
     st.stop()
 
 
@@ -45,12 +48,12 @@ def build_chain(pdf_path):
 
     vectorstore = FAISS.from_documents(docs, embeddings)
 
+    # 2. FIX: model_name aur groq_api_key parameters ko update kiya gaya hai
     llm = ChatGroq(
-        model_name="llama-3.1-8b-instant",
+        model_name="llama-3.1-8b-instant",  # Correct standard parameter
         temperature=0,
-        groq_api_key=os.getenv("GROQ_API_KEY")
+        groq_api_key=groq_api_key          # Correct standard parameter
     )
-
 
     qa_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
