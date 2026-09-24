@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEndpoint
+
+# FIX: ChatHuggingFace wrapper import kiya gaya hai jo conversational task ko natively handle karega
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_classic.memory import ConversationBufferMemory
@@ -37,15 +39,18 @@ def build_chain(pdf_path):
 
     vectorstore = FAISS.from_documents(docs, embeddings)
 
-    # Free production HuggingFace Endpoint config
-    llm = HuggingFaceEndpoint(
+    # Base endpoint setup (Novita ke standard constraints bypass karne ke liye text-generation default rakhein)
+    raw_llm = HuggingFaceEndpoint(
         repo_id="meta-llama/Llama-3.1-8B-Instruct",
         temperature=0.1,
         huggingfacehub_api_token=hf_token,
-        task="conversational"
+        task="text-generation"
     )
 
-    # FIX: Memory verification runtime loop ke andar hi declare kiya gaya hai
+    # FIX: Is raw endpoint ko ChatHuggingFace ke andar wrap kiya gaya hai
+    # Yeh automatic pipeline ko /v1/chat/completions standard par badal dega aur Novita provider crash nahi karega
+    llm = ChatHuggingFace(llm=raw_llm)
+
     memory = ConversationBufferMemory(
         memory_key="chat_history",
         output_key="answer",
