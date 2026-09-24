@@ -50,5 +50,7 @@ if uploaded_file:
                 st.session_state.messages.append({"role": "assistant", "content": answer})
                 
         except Exception as e:
-            st.error(f"Execution Error context missing.")
+    # Yeh hume asli error message screen par dikhayega
+            st.error(f"Actual Backend Error: {str(e)}")
             st.stop()
+
