@@ -13,6 +13,7 @@ from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_classic.memory import ConversationBufferMemory
 from langchain_classic.chains import ConversationalRetrievalChain
+from langchain_core.callbacks import LangChainTracer
 
 load_dotenv()
 
