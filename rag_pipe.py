@@ -1,6 +1,7 @@
 import streamlit as st
 import os 
 from dotenv import load_dotenv
+import langchain
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -16,11 +17,20 @@ from langchain_classic.chains import ConversationalRetrievalChain
 load_dotenv()
 
 hf_token = os.getenv("HF_TOKEN") or st.secrets.get("HF_TOKEN")
+langsmith_key = os.getenv("LANGCHAIN_API_KEY") or st.secrets.get("LANGCHAIN_API_KEY")
+
 
 if not hf_token:
     st.error("Hugging Face Token not found. Please add it to Streamlit Secrets.")
     st.stop()
 
+# --- BULLETPROOF LANGSMITH EXPLICIT INITIALIZATION ---
+if langsmith_key:
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ["LANGCHAIN_API_KEY"] = langsmith_key
+    os.environ["LANGCHAIN_PROJECT"] = "genai-pdf-chat-groq"
+    # LangChain v0.2+
+    langchain.turn_on_tracing()
 
 @st.cache_resource
 def build_chain(pdf_path):
