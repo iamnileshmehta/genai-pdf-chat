@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 from rag_pipe import build_chain
-from langchain_core.callbacks import LangChainTracer
 
 st.set_page_config(page_title="GenAI PDF Chatbot", layout="centered")
 st.title("📄 GenAI PDF Chatbot")
@@ -37,16 +36,8 @@ if uploaded_file:
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 
                 with st.spinner("Retrieving from FAISS and waiting for response..."):
-                    
-                    # FIX: Explicit manual callback injection for LangSmith
-                    callbacks = []
-                    langsmith_key = os.getenv("LANGCHAIN_API_KEY")
-                    if langsmith_key:
-                        tracer = LangChainTracer(project_name="genai-pdf-chat-groq")
-                        callbacks = [tracer]
-                    
-                    # System execution with explicit telemetry callbacks
-                    response = qa_chain.invoke({"question": prompt}, {"callbacks": callbacks})
+                    # Native execution model (Variables auto-injected from environment)
+                    response = qa_chain.invoke({"question": prompt})
                     answer = response.get("answer", "Unable to extract response validation constraints.")
                     
                 with st.chat_message("assistant"):
